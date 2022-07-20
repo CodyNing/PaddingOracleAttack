@@ -1,7 +1,67 @@
-from decrypt import decryptblock
+# from decrypt import decryptblock
+from Crypto.Cipher import AES
 import numpy as np
 import sys
+import subprocess
 
+def oracle(ciphertext):
+    f = open("zna3tmp.cipher", "wb")
+    f.write(ciphertext)
+    f.close()
+    res = subprocess.check_output(['python3', 'oracle.py', 'zna3tmp.cipher'])
+    return int(res.decode()[0]) == 1
+
+# def oracle(ciphertext):
+#     key = b'dont use the key'
+#     iv = b'ABCDEFGHabcdefgh'
+
+#     cipher = AES.new(key, AES.MODE_CBC, iv)
+#     plaintext = cipher.decrypt(ciphertext)
+#     #last byte tells us how much padding there is
+#     padnum = 16 - plaintext[-1]
+#     if padnum <= 0:
+#         return False
+#     passed_check = True
+#     for i in range(padnum):
+#         if plaintext[-i-1] != 16 - padnum:
+#             passed_check = False
+#             break
+#     return passed_check
+
+def decryptbyte(rs, yn, k):
+    for i in range(k+1, 16):
+        rs[i] ^= k
+    
+    for i in range(256):
+        rs[k] = i
+        guess = bytes(rs + yn)
+        if oracle(guess):
+            break
+    
+    if k == 15:
+
+        for i in range(k):
+            init = rs[i]
+            for j in range(255):
+                rs[i] = (init + j) % 256
+                guess = bytes(rs + yn)
+                if oracle(guess):
+                    break
+                else:
+                    rs[k] ^= i
+
+    rs[k] ^= k
+
+    for i in range(k+1, 16):
+        rs[i] ^= k
+
+    return rs
+
+def decryptblock(yn):
+    rs = bytearray(list(np.random.randint(low=0, high=256, size=16)))
+    for k in range(16):
+        rs = decryptbyte(rs, yn, 15-k)
+    return rs
 
 def bxor(a: bytearray, b: bytearray):
     return bytes(i ^ j for i, j in zip(a, b))
