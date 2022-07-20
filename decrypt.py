@@ -79,7 +79,6 @@ def decrypt(ciphertext):
 
     padnum = xn[-1]
     xn = xn[:padnum-16]
-    xn
         
     return xn
 
