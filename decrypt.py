@@ -3,29 +3,29 @@ import subprocess
 import sys
 import numpy as np
 
-# def oracle(ciphertext):
-#     f = open("zna3tmp.cipher", "wb")
-#     f.write(ciphertext)
-#     f.close()
-#     res = subprocess.check_output('python3 oracle.py zna3tmp.cipher')
-#     return int(res.decode()[0]) == 1
-
 def oracle(ciphertext):
-    key = b'dont use the key'
-    iv = b'ABCDEFGHabcdefgh'
+    f = open("zna3tmp.cipher", "wb")
+    f.write(ciphertext)
+    f.close()
+    res = subprocess.check_output(['python3', 'oracle.py', 'zna3tmp.cipher'])
+    return int(res.decode()[0]) == 1
 
-    cipher = AES.new(key, AES.MODE_CBC, iv)
-    plaintext = cipher.decrypt(ciphertext)
-    #last byte tells us how much padding there is
-    padnum = 16 - plaintext[-1]
-    if padnum <= 0:
-        return False
-    passed_check = True
-    for i in range(padnum):
-        if plaintext[-i-1] != 16 - padnum:
-            passed_check = False
-            break
-    return passed_check
+# def oracle(ciphertext):
+#     key = b'dont use the key'
+#     iv = b'ABCDEFGHabcdefgh'
+
+#     cipher = AES.new(key, AES.MODE_CBC, iv)
+#     plaintext = cipher.decrypt(ciphertext)
+#     #last byte tells us how much padding there is
+#     padnum = 16 - plaintext[-1]
+#     if padnum <= 0:
+#         return False
+#     passed_check = True
+#     for i in range(padnum):
+#         if plaintext[-i-1] != 16 - padnum:
+#             passed_check = False
+#             break
+#     return passed_check
 
 
 
