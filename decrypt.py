@@ -4,10 +4,10 @@ import sys
 import numpy as np
 
 def oracle(ciphertext):
-    f = open("zna3tmp.cipher", "wb")
+    f = open("tmp.cipher", "wb")
     f.write(ciphertext)
     f.close()
-    res = subprocess.check_output(['python3', 'oracle.py', 'zna3tmp.cipher'])
+    res = subprocess.check_output(['python3', 'oracle.py', 'tmp.cipher'])
     return int(res.decode()[0]) == 1
 
 # def oracle(ciphertext):
